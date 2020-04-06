@@ -74,16 +74,13 @@ public class PatientImp implements IPatientService {
 
     @Override
     public CompletableFuture<Patient> delete(int id) {
-        /**
         HttpRequest request = HttpRequest.newBuilder()
                 .DELETE()
-                .uri(URI.create(url + "/" + id))
+                .uri(URI.create(PATIENT_URL + "/" + id))
                 .build();
 
         return httpClient.sendAsync(request, responseInfo -> new PatientSubscriber())
                 .thenApply(HttpResponse::body);
-         **/
-        return null;
     }
 
 }

@@ -27,6 +27,13 @@ public class DoctorImp implements IDoctorService {
     @Autowired
     HttpMapping httpMapping = new HttpMapping();
 
+    /**
+     * Sends a POST HttpRequest to an url corresponding to the Doctor service in order to insert
+     * a doctors data into ist database. It sends the request in x-www-form-urlencoded. It receives
+     * a response from the Doctor service as a JSON which is mapped into a Doctor object.
+     * @param requestBody - Doctor
+     * @return CompletableFuture<Doctor>
+     */
     @Override
     public CompletableFuture<Doctor> create(Doctor requestBody) {
         Map<Object, Object> data = new HashMap<>();
@@ -44,6 +51,13 @@ public class DoctorImp implements IDoctorService {
                 .thenApply(HttpResponse::body);
     }
 
+    /**
+     * Sends a GET HttpRequest to an url corresponding to the Doctor service in order to retrieve
+     * a doctors data from ist database based on an id. It receives a response from the Doctor service
+     * as a JSON which is mapped into a Doctor object.
+     * @param id - Doctor
+     * @return CompletableFuture<Doctor>
+     */
     @Override
     public CompletableFuture<Doctor> retrieve(int id) {
         HttpRequest request = HttpRequest.newBuilder()
@@ -55,6 +69,13 @@ public class DoctorImp implements IDoctorService {
                 .thenApply(HttpResponse::body);
     }
 
+    /**
+     * Sends a PUT HttpRequest to an url corresponding to the Doctor service in order to update
+     * a doctors data from ist database. It sends the request in x-www-form-urlencoded. It receives
+     * a response from the Doctor service as a JSON which is mapped into a Doctor object.
+     * @param requestBody - Doctor
+     * @return CompletableFuture<Doctor>
+     */
     @Override
     public CompletableFuture<Doctor> update(Doctor requestBody) {
         Map<Object, Object> data = new HashMap<>();
@@ -73,11 +94,30 @@ public class DoctorImp implements IDoctorService {
                 .thenApply(HttpResponse::body);
     }
 
+    /**
+     * Deletes a Doctors data from the database of the Doctor service based on an id.
+     * @param id
+     * @return CompletableFuture<Doctor>
+     */
     @Override
     public CompletableFuture<Doctor> delete(int id) {
-        return null;
+        HttpRequest request = HttpRequest.newBuilder()
+                .DELETE()
+                .uri(URI.create(DOCTOR_URL + "/" + id))
+                .build();
+
+        return httpClient.sendAsync(request, responseInfo -> new DoctorSubscriber())
+                .thenApply(HttpResponse::body);
     }
 
+    /**
+     * Retrieves a Doctor and a list of its patients ids from the Doctor service. It then retrieves
+     * each patient from the Patient service and returns them as a list in a EntityList object with the Doctor.
+     * (Future improvement: forward the list to the patients service and receive a patient list in
+     * order to only make one call)
+     * @param idDoctor - Doctors id
+     * @return EntityList<Doctor, Patient>
+     */
     @Override
     public EntityList<Doctor, Patient> findPatients(int idDoctor) {
         EntityList<Doctor, Patient> response = new EntityList<>();
@@ -100,6 +140,11 @@ public class DoctorImp implements IDoctorService {
         return response;
     }
 
+    /**
+     * Returns a doctor and a Map of appointments including the date and the Patient.
+     * @param idDoctor
+     * @return AppointmentList<Doctor, Patient> - object with a Doctor and a Map of dates and patients.
+     */
     @Override
     public AppointmentList<Doctor, Patient> findAppointments(int idDoctor) {
         AppointmentList<Doctor, Patient> response = new AppointmentList<>();
@@ -123,8 +168,13 @@ public class DoctorImp implements IDoctorService {
         return response;
     }
 
-    //
-
+    /**
+     * Returns a list of the doctors the patient has had appointments with.
+     * Doctor data is retrieved from the Doctor Service and Patient data
+     * from the Patient service.
+     * @param idPatient
+     * @return EntityList<Patient, Doctor> - Patient and list of Doctors
+     */
     @Override
     public EntityList<Patient, Doctor> findDoctorsByPatient (int idPatient) {
         EntityList<Patient, Doctor> response = new EntityList<>();
@@ -142,6 +192,11 @@ public class DoctorImp implements IDoctorService {
         return response;
     }
 
+    /**
+     * Returns a patient and a Map of appointments including the date and the doctor.
+     * @param idPatient
+     * @return AppointmentList<Patient, Doctor> - Patient and Map of dates and Doctors.
+     */
     @Override
     public AppointmentList<Patient, Doctor> findAppointmentsByPatient (int idPatient) {
         AppointmentList<Patient, Doctor> response = new AppointmentList<>();
@@ -159,6 +214,14 @@ public class DoctorImp implements IDoctorService {
         return response;
     }
 
+    /**
+     * It registers a new appointment in the database of the Doctor service based on a date,
+     * a Patients id and a Doctors id.
+     * @param idDoctor
+     * @param idPatient
+     * @param date
+     * @return Appointment
+     */
     public Appointment  createAppointment(int idDoctor, int idPatient, String date) {
         Appointment appointment = new Appointment();
         Map<Object, Object> data = new HashMap<>();

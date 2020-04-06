@@ -31,7 +31,7 @@ public class PatientController {
 
     @DeleteMapping("/patient/{id}")
     public Patient deletePatient(@PathVariable(name = "id") int patientId) {
-        return null;
+        return patientImp.delete(patientId).join();
     }
 
 }

@@ -31,10 +31,8 @@ public class DoctorController {
 
     @DeleteMapping("/doctor/{id}")
     public Doctor deleteDoctor(@PathVariable(name = "id") int doctorId) {
-        return null;
+        return doctorImp.delete(doctorId).join();
     }
-
-    //Mixed methods
 
     @GetMapping("/doctor/{id}/appointment")
     public AppointmentList<Doctor, Patient> retrieveAppointments(@PathVariable(name = "id") int doctorId) {

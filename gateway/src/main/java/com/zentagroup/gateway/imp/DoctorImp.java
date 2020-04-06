@@ -94,9 +94,20 @@ public class DoctorImp implements IDoctorService {
                 .thenApply(HttpResponse::body);
     }
 
+    /**
+     * Deletes a Doctors data from the database of the Doctor service based on an id.
+     * @param id
+     * @return CompletableFuture<Doctor>
+     */
     @Override
     public CompletableFuture<Doctor> delete(int id) {
-        return null;
+        HttpRequest request = HttpRequest.newBuilder()
+                .DELETE()
+                .uri(URI.create(DOCTOR_URL + "/" + id))
+                .build();
+
+        return httpClient.sendAsync(request, responseInfo -> new DoctorSubscriber())
+                .thenApply(HttpResponse::body);
     }
 
     /**

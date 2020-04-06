@@ -14,9 +14,6 @@ public class DoctorController {
     @Autowired
     DoctorImp doctorImp = new DoctorImp();
 
-    @Autowired
-    PatientImp patientImp = new PatientImp();
-
     @GetMapping("/doctor/{id}")
     public Doctor retrieveDoctor(@PathVariable(name = "id") int doctorId) {
         return doctorImp.retrieve(doctorId).join();
